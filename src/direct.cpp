@@ -43,6 +43,9 @@ Vector Direct::compute_impl(const MatrixRef target,
     return g;
 }
 
+Vector Direct::compute_impl(const MatrixRef target, const VectorRef weights,
+                            const double threshold_truncate) const {}
+
 Vector direct(const MatrixRef source, const MatrixRef target,
               double bandwidth) {
     return Direct(source, bandwidth).compute(target);
@@ -52,4 +55,4 @@ Vector direct(const MatrixRef source, const MatrixRef target, double bandwidth,
               const VectorRef weights) {
     return Direct(source, bandwidth).compute(target, weights);
 }
-}
+} // namespace fgt

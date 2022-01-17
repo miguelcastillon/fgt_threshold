@@ -137,9 +137,15 @@ public:
     /// Computes the Gauss transform with the given weights.
     Vector compute(const MatrixRef target, const VectorRef weights);
 
+    Vector compute(const MatrixRef target, const double threshold_truncate);
+    Vector compute(const MatrixRef target, const VectorRef weights,
+                   const double threshold_truncate);
+
 private:
     virtual Vector compute_impl(const MatrixRef target,
                                 const VectorRef weights) const = 0;
+    virtual Vector compute_impl(const MatrixRef target, const VectorRef weights,
+                                const double threshold_truncate) const = 0;
 
     const Matrix m_source;
     double m_bandwidth;
@@ -161,6 +167,8 @@ public:
 private:
     virtual Vector compute_impl(const MatrixRef target,
                                 const VectorRef weights) const;
+    virtual Vector compute_impl(const MatrixRef target, const VectorRef weights,
+                                const double threshold_truncate) const;
 };
 
 /// Direct Gauss transform using a KD-tree truncation.
@@ -192,6 +200,8 @@ private:
 
     virtual Vector compute_impl(const MatrixRef target,
                                 const VectorRef weights) const;
+    virtual Vector compute_impl(const MatrixRef target, const VectorRef weights,
+                                const double threshold_truncate) const;
 
     double m_epsilon;
     std::unique_ptr<NanoflannTree> m_tree;
@@ -233,6 +243,8 @@ public:
 private:
     virtual Vector compute_impl(const MatrixRef target,
                                 const VectorRef weights) const;
+    virtual Vector compute_impl(const MatrixRef target, const VectorRef weights,
+                                const double threshold_truncate) const;
     Vector compute_monomials(const VectorRef d) const;
     Vector compute_constant_series() const;
 
@@ -244,4 +256,4 @@ private:
     Vector m_constant_series;
     Vector m_ry_square;
 };
-}
+} // namespace fgt

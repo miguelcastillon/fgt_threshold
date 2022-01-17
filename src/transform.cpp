@@ -30,4 +30,15 @@ Vector Transform::compute(const MatrixRef target) {
 Vector Transform::compute(const MatrixRef target, const VectorRef weights) {
     return compute_impl(target, weights);
 }
+
+Vector Transform::compute(const MatrixRef target,
+                          const double threshold_truncate) {
+    Vector weights = Vector::Ones(this->source().rows());
+    return compute(target, weights, threshold_truncate);
 }
+
+Vector Transform::compute(const MatrixRef target, const VectorRef weights,
+                          const double threshold_truncate) {
+    return compute_impl(target, weights, threshold_truncate);
+}
+} // namespace fgt

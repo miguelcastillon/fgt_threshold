@@ -58,7 +58,7 @@ struct MatrixAdaptor {
     Matrix::Index m_rows;
     Matrix::Index m_cols;
 };
-}
+} // namespace
 
 Vector direct_tree(const MatrixRef source, const MatrixRef target,
                    double bandwidth, double epsilon) {
@@ -122,4 +122,33 @@ Vector DirectTree::compute_impl(const MatrixRef target,
     }
     return g;
 }
+
+Vector DirectTree::compute_impl(const MatrixRef target, const VectorRef weights,
+                                const double threshold_truncate) const {
+    double h2 = bandwidth() * bandwidth();
+    double cutoff_radius = bandwidth() * std::sqrt(std::log(1.0 / epsilon()));
+    double r2 = cutoff_radius * cutoff_radius;
+    Matrix::Index rows_source = this->source().rows();
+    Matrix::Index rows_target = target.rows();
+    Vector g = Vector::Zero(rows_target);
+    Matrix::Index cols = this->source().cols();
+
+    nanoflann::SearchParams params;
+    params.sorted = false;
+
+#pragma omp parallel for
+    for (Matrix::Index j = 0; j < rows_target; ++j) {
+        std::vector<std::pair<size_t, double>> indices_distances;
+        indices_distances.reserve(unsigned(rows_source));
+        size_t nfound = m_tree->tree.radiusSearch(&target.data()[j * cols], r2,
+                                                  indices_distances, params);
+        for (size_t i = 0; i < nfound; ++i) {
+            auto entry = indices_distances[i];
+            if (entry.second < threshold_truncate)
+                g[j] +=
+                    weights[signed(entry.first)] * std::exp(-entry.second / h2);
+        }
+    }
+    return g;
 }
+} // namespace fgt

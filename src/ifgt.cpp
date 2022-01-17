@@ -50,7 +50,7 @@ Matrix::Index nchoosek(Matrix::Index n, Matrix::Index k) {
     }
     return Matrix::Index(nchsk);
 }
-}
+} // namespace
 
 Vector ifgt(const MatrixRef source, const MatrixRef target, double bandwidth,
             double epsilon) {
@@ -255,4 +255,7 @@ Vector Ifgt::compute_impl(const MatrixRef target,
 
     return G;
 }
-}
+
+Vector Ifgt::compute_impl(const MatrixRef target, const VectorRef weights,
+                          const double threshold_truncate) const {}
+} // namespace fgt
